@@ -1,12 +1,11 @@
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
 import { Admin, Analytics, Dashboard, Home, Landing } from './pages';
+import { ProtectedRoute } from './components/ProtectedRoute';
 import { useState } from 'react';
 
 
 function App() {
-
   const [user, setUser] = useState(null)
-
   const login = () => {
     //request done
     setUser({
@@ -14,8 +13,6 @@ function App() {
       name: 'Daniel'
     })
   }
-  console.log(user)
-
 
   const logout = () => setUser(null)
   return (
@@ -28,14 +25,20 @@ function App() {
           <button onClick={login}>Login</button>
         )
       }
-
-
       <Routes>
         <Route index element={<Landing />} />
         <Route path='/landing' element={<Landing />} />
-        <Route path='/home' element={<Home />} />
-        <Route path='/dashboard' element={<Dashboard />} />
-        <Route path='/analytics' element={<Analytics />} />
+        <Route element={<ProtectedRoute user={user} />}>
+          <Route path='/home' element={<Home />} />
+          <Route path='/dashboard' element={<Dashboard />} />
+        </Route>
+
+        <Route path='/analytics' element={
+          <ProtectedRoute user={user}>
+            <Analytics />
+          </ProtectedRoute>
+        } />
+
         <Route path='/admin' element={<Admin />} />
       </Routes>
     </BrowserRouter>
